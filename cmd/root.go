@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"pokeShowcase-api/configs"
+	"pokeShowcase-api/internal/database"
 	"pokeShowcase-api/internal/http"
 
 	"github.com/spf13/cobra"
@@ -41,6 +42,15 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+var migrateCmd = &cobra.Command{
+	Use:   "migrate",
+	Short: "Migrate all database tables for you app",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		database.Migrate()
+	},
+}
+
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -50,4 +60,5 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.AddCommand(migrateCmd)
 }

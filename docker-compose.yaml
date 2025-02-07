@@ -1,9 +1,64 @@
 services:
-  app:
+  test: &defaults
     build:
       context: .
-      dockerfile: Dockerfile
-
+      dockerfile: build/go/Dockerfile
     working_dir: /app
+    command: >-
+      sh -c "
+      go build -race -o entrypoint_test_ignored main.go
+      && go test -coverprofile=profile.cov ./..."
+    env_file:
+      - ./.docker/test.env
     volumes:
-      - ./:/app
+      - .:/app/
+      - go_packages:/go
+
+  app:
+    <<: *defaults
+    command: go run main.go
+    ports:
+      - 8080:8080
+    env_file:
+      - ./.docker/dev.env
+    depends_on:
+      database:
+        condition: service_healthy
+  migrate:
+    <<: *defaults
+    env_file:
+      - ./.docker/dev.env
+    command: go run main.go migrate
+    
+    depends_on:
+      database:
+        condition: service_healthy
+
+  update-docs:
+    <<: *defaults
+    command: swag init -o api
+
+  database:
+    build:
+      context: .
+      dockerfile: build/mysql/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: bob_live
+      MYSQL_PASSWORD: pwdlocal
+      MYSQL_DATABASE: pokeshowcase
+
+    volumes:
+      - database:/var/lib/mysql
+    healthcheck:
+      test:  ["CMD", "mysql", "-uroot", "-proot", "-e", "SELECT 1"]
+      interval: 2s
+      retries: 100
+      start_period: 10s
+      timeout: 5s
+    ports:
+      - "3306:3306"
+
+volumes:
+  database: {}
+  go_packages: {} 
