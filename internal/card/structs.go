@@ -14,4 +14,8 @@ type Card struct {
 }
 
 type CardRequestBody struct {
+	Name       string `json:"name" bson:"name"`
+	Collection string `json:"collection" bson:"collection"`
+	Rarity     string `json:"rarity" bson:"rarity"`
+	ImageUrl   string `json:"image_url" bson:"image_url"`
 }
