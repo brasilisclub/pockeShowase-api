@@ -13,6 +13,10 @@ type Card struct {
 	ImageUrl   string     `json:"image_url" bson:"image_url"`
 }
 
+type Cards struct {
+	Cards []Card `json:"cards" bson:"cards"`
+}
+
 type CardRequestBody struct {
 	Name       string `json:"name" bson:"name"`
 	Collection string `json:"collection" bson:"collection"`
