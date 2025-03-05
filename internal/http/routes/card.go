@@ -8,6 +8,7 @@ import (
 
 func CardRoutes(r *gin.Engine) {
 	r.GET("/cards", controllers.GetCards)
+	r.GET("/card/:id", controllers.GetCard)
 	r.POST("/card", controllers.PostProduct)
 	r.PUT("/card/:id", controllers.PutCard)
 }
