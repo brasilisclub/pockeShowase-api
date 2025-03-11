@@ -2,25 +2,23 @@ package services
 
 import (
 	"pokeShowcase-api/internal/card"
+	"pokeShowcase-api/internal/card/services/helpers"
 	"pokeShowcase-api/internal/database"
 )
 
 func UpdateCard(id string, crb card.CardRequestBody) (card.Card, error) {
-	var dbProduct card.Card
+	var dbCard card.Card
 
-	dbProduct, err := GetCardById(id)
+	dbCard, err := GetCardById(id)
 	if err != nil {
-		return dbProduct, err
+		return dbCard, err
 	}
 
-	dbProduct.Name = crb.Name
-	dbProduct.Collection = crb.Collection
-	dbProduct.Rarity = crb.Rarity
-	dbProduct.ImageUrl = crb.ImageUrl
+	dbCard = helpers.UpdateDbCard(crb, dbCard)
 
 	c := database.GetConnector()
 
-	err = c.Save(&dbProduct).Error
+	err = c.Save(&dbCard).Error
 
-	return dbProduct, err
+	return dbCard, err
 }

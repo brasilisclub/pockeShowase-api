@@ -34,6 +34,7 @@ func PutCard(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, utils.GenericResponse{
 			Message: fmt.Sprintf("internal server error %s", err.Error()),
 		})
+		return
 	}
 
 	ctx.JSON(http.StatusCreated, dbCard)
