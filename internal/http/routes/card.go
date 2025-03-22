@@ -10,6 +10,6 @@ func CardRoutes(r *gin.Engine) {
 	r.DELETE("/card/:id", controllers.DeleteCard)
 	r.GET("/cards", controllers.GetCards)
 	r.GET("/card/:id", controllers.GetCard)
-	r.POST("/card", controllers.PostProduct)
+	r.POST("/card", controllers.PostCard)
 	r.PUT("/card/:id", controllers.PutCard)
 }

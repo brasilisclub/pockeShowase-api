@@ -9,6 +9,8 @@ type envs struct {
 	DATABASE_PORT     string `json:"DATABASE_PORT" env:"DATABASE_PORT" default:"3306"`
 	DATABASE_USER     string `json:"DATABASE_USER" env:"DATABASE_USER" default:"root"`
 	PORT              string `env:"PORTS" default:"8080"`
+	S3_BUCKET_NAME    string `env:"S3_BUCKET_NAME" default:"pokeshowcase-api"`
+	AWS_REGION        string `env:"AWS_REGION" default:"us-east-1"`
 	LOG_LEVEL         string `env:"LOG_LEVEL" default:"info"`
 }
 

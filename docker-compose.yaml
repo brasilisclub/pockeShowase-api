@@ -20,7 +20,7 @@ services:
     ports:
       - 8080:8080
     env_file:
-      - ./.docker/dev.env
+      - ./.docker/.ENV
     depends_on:
       database:
         condition: service_healthy

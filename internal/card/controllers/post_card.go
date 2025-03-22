@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"pokeShowcase-api/internal/card"
@@ -10,10 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PostProduct(ctx *gin.Context) {
+func PostCard(ctx *gin.Context) {
 
 	var card card.CardRequestBody
-	err := ctx.ShouldBindBodyWithJSON(&card)
+
+	cardData := ctx.PostForm("card")
+	err := json.Unmarshal([]byte(cardData), &card)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, utils.GenericResponse{
@@ -22,7 +25,19 @@ func PostProduct(ctx *gin.Context) {
 		return
 	}
 
-	createdCard, err := services.CreateCard(card)
+	file, err := ctx.FormFile("image")
+
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest,
+			utils.GenericResponse{
+				Message: fmt.Sprintf("Error getting the file %s", err.Error()),
+			},
+		)
+		return
+	}
+
+	createdCard, err := services.CreateCard(card, file)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, utils.GenericResponse{
