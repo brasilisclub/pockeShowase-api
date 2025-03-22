@@ -2,10 +2,8 @@ package services
 
 import (
 	"bytes"
-	"fmt"
 	"mime/multipart"
 	"pokeShowcase-api/configs"
-	awsConnector "pokeShowcase-api/internal/aws"
 	s3Connector "pokeShowcase-api/internal/aws/s3"
 	"pokeShowcase-api/internal/card"
 	"pokeShowcase-api/internal/card/services/helpers"
@@ -36,12 +34,11 @@ func CreateCard(crb card.CardRequestBody, file *multipart.FileHeader) (card.Card
 		return dbCard, err
 	}
 
-	ses := awsConnector.GetSession()
-	s3Connection := s3Connector.GetS3Connection(ses)
+	s3Connection := s3Connector.GetS3Connection()
 
 	_, err = s3Connection.PutObject(&s3.PutObjectInput{
 		Bucket:      aws.String(configs.Envs.S3_BUCKET_NAME),
-		Key:         aws.String(fmt.Sprintf("%s/%s-%s.jpg", dbCard.Collection, dbCard.CardId, dbCard.Name)),
+		Key:         aws.String(helpers.GetCardPath(dbCard)),
 		Body:        bytes.NewReader(buf.Bytes()),
 		ContentType: aws.String(file.Header.Get("Content-Type")),
 	})

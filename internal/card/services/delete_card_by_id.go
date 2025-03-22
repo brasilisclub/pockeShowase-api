@@ -1,22 +1,21 @@
 package services
 
 import (
-	"fmt"
-	"pokeShowcase-api/internal/card"
-	"pokeShowcase-api/internal/database"
+	"pokeShowcase-api/internal/aws/s3"
+	"pokeShowcase-api/internal/card/services/helpers"
 )
 
 func DeleteCardById(id string) error {
-	c := database.GetConnector()
-
-	result := c.Delete(&card.Card{}, id)
-
-	if result.Error != nil {
-		return fmt.Errorf("error deleting ordine: %s", result.Error)
+	card, err := GetCardById(id)
+	if err != nil {
+		return err
 	}
 
-	if result.RowsAffected == 0 {
-		return card.ErrorCardNotFounded
+	err = DeleteDatabaseCardById(id)
+	if err != nil {
+		return err
 	}
-	return nil
+
+	err = s3.DeleteBucketObject(helpers.GetCardPath(card))
+	return err
 }
