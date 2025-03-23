@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -14,7 +15,9 @@ import (
 func PutCard(ctx *gin.Context) {
 	var requestBody card.CardRequestBody
 
-	err := ctx.ShouldBindBodyWithJSON(&requestBody)
+	cardData := ctx.PostForm("card")
+	err := json.Unmarshal([]byte(cardData), &requestBody)
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, utils.GenericResponse{
 			Message: fmt.Sprintf("Invalid body %s", err.Error()),
@@ -22,7 +25,19 @@ func PutCard(ctx *gin.Context) {
 		return
 	}
 
-	dbCard, err := services.UpdateCard(ctx.Param("id"), requestBody)
+	file, err := ctx.FormFile("image")
+
+	if err != nil {
+		ctx.JSON(
+			http.StatusBadRequest,
+			utils.GenericResponse{
+				Message: fmt.Sprintf("Error getting the file %s", err.Error()),
+			},
+		)
+		return
+	}
+
+	dbCard, err := services.UpdateCard(ctx.Param("id"), requestBody, file)
 
 	if err != nil {
 		if errors.Is(err, card.ErrorCardNotFounded) {
